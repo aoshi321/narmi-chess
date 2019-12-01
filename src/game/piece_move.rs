@@ -4,7 +4,7 @@ fn validate_moves(moves: Vec<(u8, u8)>) -> Vec<(u8, u8)> {
     let mut valid_moves: Vec<(u8, u8)> = [].to_vec();
     for m in moves.iter() {
         let (m1, m2) = *m;
-        if (m1 > 1 && m1 < 8) && (m2 < 8) {
+        if m1 < 8 && m2 < 8 {
             valid_moves.push((m1, m2))
         }
     }
@@ -43,12 +43,7 @@ fn get_pawn_moves(start: (u8, u8), is_white: bool) -> Vec<(u8, u8)> {
 pub fn get_moves(is_white: bool, start: (u8, u8), piece_type: PieceType) -> Vec<(u8, u8)> {
     match piece_type {
         PieceType::Pawn => get_pawn_moves(start, is_white),
-        PieceType::King => get_pawn_moves(start, is_white),
-        PieceType::Queen => get_pawn_moves(start, is_white),
-        PieceType::Rook => get_pawn_moves(start, is_white),
-        PieceType::Bishop => get_pawn_moves(start, is_white),
-        PieceType::Knight => get_pawn_moves(start, is_white),
-        PieceType::Empty => get_pawn_moves(start, is_white),
+        _ => panic!("Not implemented yet"),
     }
 }
 
@@ -111,6 +106,16 @@ mod tests {
     }
 
     #[test]
+    fn white_pawn_cant_move_backwards() {
+        assert_can_not_move(true, PieceType::Pawn, (1, 0), (0, 0));
+    }
+
+    #[test]
+    fn white_pawn_cant_capture_backwards() {
+        assert_can_not_move(true, PieceType::Pawn, (1, 0), (0, 1));
+    }
+
+    #[test]
     fn black_pawn_can_initially_move_forward_two() {
         assert_move(false, PieceType::Pawn, (6, 0), (4, 0));
     }
@@ -139,5 +144,35 @@ mod tests {
     #[test]
     fn black_pawn_capture_right_blocked_by_edge_of_board() {
         assert_can_not_move(false, PieceType::Pawn, (6, 7), (5, 8));
+    }
+
+    #[test]
+    fn black_pawn_cant_move_backwards() {
+        assert_can_not_move(false, PieceType::Pawn, (1, 0), (2, 0));
+    }
+
+    #[test]
+    fn black_pawn_cant_capture_backwards() {
+        assert_can_not_move(false, PieceType::Pawn, (1, 0), (2, 1));
+    }
+
+    #[test]
+    fn pawn_can_move_to_top_of_board() {
+        assert_move(true, PieceType::Pawn, (6, 0), (7, 0));
+    }
+
+    #[test]
+    fn pawn_can_move_to_bottom_of_board() {
+        assert_move(false, PieceType::Pawn, (1, 0), (0, 0));
+    }
+
+    #[test]
+    fn pawn_can_capture_to_left_edge_of_board() {
+        assert_move(true, PieceType::Pawn, (1, 1), (2, 0));
+    }
+
+    #[test]
+    fn pawn_can_capture_to_right_edge_of_board() {
+        assert_move(true, PieceType::Pawn, (1, 6), (2, 7));
     }
 }
